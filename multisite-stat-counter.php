@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       Multisite Plugin Starter
+ * Plugin Name:       Multisite Stats
  * Plugin URI:        http://deeptiboddapati.com
  * Description:       This adds a widget that displays the number of posts and users per site in your Multisite install.
  * Version:           1.0
@@ -138,7 +138,7 @@ add_action( 'rest_api_init', function () {
 } );
 
 
-class My_Widget extends \WP_Widget {
+class MultiSiteStats extends \WP_Widget {
 
 	/**
 	 * Sets up the widgets name etc
@@ -158,31 +158,37 @@ class My_Widget extends \WP_Widget {
 	 * @param array $instance
 	 */
 	public function widget( $args, $instance ) {
-		echo " hi";
-		// outputs the content of the widget
+		$endpointurl = get_site_url( ) . '/wp-json/multisitestats/v1/stats/';
+		$response = wp_remote_get( $endpointurl );
+		$body = wp_remote_retrieve_body( $response );
+		$stats = json_decode( $body );
+		?>
+			<h2>Multisite Statistics</h2>
+			<table>
+				<tr>
+					<th>Domain</th>
+					<th>Users</th>
+					<th>Posts</th>
+				</tr>
+			
+		<?php
+		foreach ( $stats as $stat ) {
+			?>
+			<tr>
+				<td><?php echo $stat->domain; ?> </td>
+				<td> <?php echo $stat->site_users; ?></td>
+				<td> <?php echo $stat->site_posts; ?></td>
+			</tr>
+			<?php
+		}
+		?>
+			</table>
+		<?php
 	}
 
-	/**
-	 * Outputs the options form on admin
-	 *
-	 * @param array $instance The widget options
-	 */
-	public function form( $instance ) {
-		// outputs the options form on admin
-	}
-
-	/**
-	 * Processing widget options on save
-	 *
-	 * @param array $new_instance The new options
-	 * @param array $old_instance The previous options
-	 */
-	public function update( $new_instance, $old_instance ) {
-		// processes widget options to be saved
-	}
 }
 
 add_action( 'widgets_init', function(){
-	register_widget( 'Multisite_Stats\My_Widget' );
+	register_widget( 'Multisite_Stats\MultiSiteStats' );
 });
 
