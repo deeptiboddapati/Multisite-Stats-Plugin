@@ -56,6 +56,16 @@ class UserFields {
 }
 new UserFields();
 
+/**
+ * Manages the network stats transient and endpoint.
+ *
+ * Adds and updates network stats to transients.
+ * Registers custom endpoint to output the network stats.
+ *
+ * @since 1.0
+ *
+ * @see \WP_Widget
+ */
 class Multisite_Stats {
 	public function __construct() {
 		// The smallest interval possible for WordPress cron is hourly.
