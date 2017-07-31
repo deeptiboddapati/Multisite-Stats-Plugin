@@ -95,19 +95,22 @@ class Multisite_Stats {
 	 * @since 1.0
 	 */
 	function refresh_network_stats() {
-		$sites = get_sites();
-		$stats = array();
-		foreach ( $sites as $site ) {
-			$domain = $site->domain;
-			$site_users = $this->get_blog_user_count( $domain );
-			$site_posts = $this->get_blog_post_count( $domain );
-			$site_stats = array();
-			$site_stats['domain'] = esc_url( $domain );
-			$site_stats['site_users'] = intval( $site_users );
-			$site_stats['site_posts'] = intval( $site_posts );
-			array_push( $stats, $site_stats );
+		$stats = get_site_transient( 'network_stats' );
+		if ( ! $stats ) {
+			$sites = get_sites();
+			$stats = array();
+			foreach ( $sites as $site ) {
+				$domain = $site->domain;
+				$site_users = $this->get_blog_user_count( $domain );
+				$site_posts = $this->get_blog_post_count( $domain );
+				$site_stats = array();
+				$site_stats['domain'] = esc_url( $domain );
+				$site_stats['site_users'] = intval( $site_users );
+				$site_stats['site_posts'] = intval( $site_posts );
+				array_push( $stats, $site_stats );
+			}
+			set_site_transient( 'network_stats', $stats, 1 * HOUR_IN_SECONDS );
 		}
-		set_site_transient( 'network_stats', $stats, 1 * HOUR_IN_SECONDS );
 	}
 
 	/**
@@ -140,7 +143,7 @@ class Multisite_Stats {
 	 */
 	function get_blog_post_count( $site_domain ) {
 		$post_count = 0;
-		$endpointurl = 'http://' . $site_domain . '/wp-json/wp/v2/posts';
+		$endpointurl = esc_url( $site_domain . '/wp-json/wp/v2/posts' );
 		// The phpcs error/reccomendation to use vip_safe_remote_get() doesn't apply to my environment.
 		$response = wp_remote_get( $endpointurl );
 		$post_count = wp_remote_retrieve_header( $response, 'x-wp-total' );
@@ -202,25 +205,27 @@ class MultiSiteStats extends \WP_Widget {
 		$response = wp_remote_get( $endpointurl );
 		$body = wp_remote_retrieve_body( $response );
 		$stats = json_decode( $body );
-		?>
-			<h2>Multisite Statistics</h2>
-			<table>
+		if( 'array' === gettype( $stats ) ){
+			?>
+				<h2>Multisite Statistics</h2>
+				<table>
+					<tr>
+						<th>Domain</th>
+						<th>Users</th>
+						<th>Posts</th>
+					</tr>
+			
+			<?php foreach ( $stats as $stat ) { ?>
 				<tr>
-					<th>Domain</th>
-					<th>Users</th>
-					<th>Posts</th>
+					<td><?php echo esc_url( $stat->domain ); ?> </td>
+					<td> <?php echo intval( $stat->site_users ); ?></td>
+					<td> <?php echo intval( $stat->site_posts ); ?></td>
 				</tr>
-			
-		<?php foreach ( $stats as $stat ) { ?>
-			<tr>
-				<td><?php echo esc_url( $stat->domain ); ?> </td>
-				<td> <?php echo intval( $stat->site_users ); ?></td>
-				<td> <?php echo intval( $stat->site_posts ); ?></td>
-			</tr>
-			
-		<?php } ?>
-			</table>
-		<?php
+				
+			<?php } ?>
+				</table>
+			<?php
+		}
 	}
 
 }
