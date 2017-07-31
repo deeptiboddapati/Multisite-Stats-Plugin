@@ -59,17 +59,19 @@ new UserFields();
  */
 function get_network_stats() {
 	$sites = get_sites();
-	$total_users = 0;
-	$total_posts = 0;
+	$stats = array();
 	foreach ( $sites as $site ) {
 		$domain = $site->domain;
 		$site_users = get_site_user_count( $domain );
-		$total_users += $site_users;
 		$site_posts = get_site_post_count( $domain );
-		$total_posts += $site_posts;
+		$site_stats = array();
+		$site_stats[ 'domain' ] = $domain;
+		$site_stats[ 'site_users' ] = $site_users;
+		$site_stats[ 'site_posts' ] = $site_posts;
+		array_push( $stats, $site_stats );
 	}
 
-
+	return $stats;
 }
 /**
  * Summary.
@@ -107,3 +109,19 @@ function get_site_post_count( $site_domain ) {
 	return $post_count;
 }
 
+/**
+ * Summary.
+ *
+ * Description.
+ *
+ * @since 1.0
+ *
+ * @param string $site_domain Description.
+ * @return int $post_count Posts in site.
+ */
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'multisitestats/v1', '/stats/', array(
+		'methods' => 'GET',
+		'callback' => 'MULTISITE_STATS\get_network_stats',
+	) );
+} );
