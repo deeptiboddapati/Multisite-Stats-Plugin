@@ -124,7 +124,7 @@ class Multisite_Stats {
 	function get_blog_post_count( $site_domain ) {
 		$post_count = 0;
 		$endpointurl = 'http://' . $site_domain . '/wp-json/wp/v2/posts';
-		// The phpcs error/reccomendation to use vip_safe_remote_get() doesn't apply to my enviornment.
+		// The phpcs error/reccomendation to use vip_safe_remote_get() doesn't apply to my environment.
 		$response = wp_remote_get( $endpointurl );
 		$post_count = wp_remote_retrieve_header( $response, 'x-wp-total' );
 		return $post_count;
