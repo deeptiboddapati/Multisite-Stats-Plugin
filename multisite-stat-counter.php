@@ -75,17 +75,19 @@ class Multisite_Stats {
 	 * @since 1.0
 	 */
 	public function __construct() {
-		// The smallest interval possible for WordPress cron is hourly.
-		if ( ! wp_next_scheduled( 'refresh_network_stats' ) ) {
-			wp_schedule_event( time(), 'hourly', 'refresh_network_stats' );
+		if ( is_main_site() ) {
+			// The smallest interval possible for WordPress cron is hourly.
+			if ( ! wp_next_scheduled( 'refresh_network_stats' ) ) {
+				wp_schedule_event( time(), 'hourly', 'refresh_network_stats' );
+			}
+			add_action( 'refresh_network_stats', array( $this, 'network_stats_endpoint' ) );
+			add_action( 'rest_api_init', function () {
+				register_rest_route( 'multisitestats/v1', '/stats/', array(
+					'methods' => 'GET',
+					'callback' => array( $this, 'network_stats_endpoint' ),
+				) );
+			} );
 		}
-		add_action( 'refresh_network_stats', array( $this, 'network_stats_endpoint' ) );
-		add_action( 'rest_api_init', function () {
-			register_rest_route( 'multisitestats/v1', '/stats/', array(
-				'methods' => 'GET',
-				'callback' => array( $this, 'network_stats_endpoint' ),
-			) );
-		} );
 	}
 	/**
 	 * Refreshes network wide statistics.
