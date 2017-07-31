@@ -207,7 +207,7 @@ class MultiSiteStats extends \WP_Widget {
 		$response = wp_remote_get( $endpointurl );
 		$body = wp_remote_retrieve_body( $response );
 		$stats = json_decode( $body );
-		if( 'array' === gettype( $stats ) ){
+		if ( 'array' === gettype( $stats ) ) {
 			?>
 				<h2>Multisite Statistics</h2>
 				<table>
