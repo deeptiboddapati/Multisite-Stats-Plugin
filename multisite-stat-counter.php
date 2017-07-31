@@ -13,9 +13,9 @@
 
 namespace MULTISITE_STATS;
 // If this file is called directly, abort.
-// if ( ! defined( 'WPINC' ) ) {
-// 	die;
-// }
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
 
 class UserFields {
 
@@ -23,7 +23,7 @@ class UserFields {
 		add_filter( 'rest_user_query',           [ $this, 'show_all_users' ] );
 	}
 	function show_all_users( $prepared_args ) {
-		unset( $prepared_args[ 'has_published_posts' ] );
+		unset( $prepared_args['has_published_posts'] );
 		return $prepared_args;
 	}
 }
@@ -43,16 +43,16 @@ function get_network_stats() {
 		$site_users = get_site_user_count( $domain );
 		$site_posts = get_site_post_count( $domain );
 		$site_stats = array();
-		$site_stats[ 'domain' ] = $domain;
-		$site_stats[ 'site_users' ] = $site_users;
-		$site_stats[ 'site_posts' ] = $site_posts;
+		$site_stats['domain'] = $domain;
+		$site_stats['site_users'] = $site_users;
+		$site_stats['site_posts'] = $site_posts;
 		array_push( $stats, $site_stats );
 	}
-	set_site_transient( 'network_stats', $stats, 1 * HOUR_IN_SECONDS);
+	set_site_transient( 'network_stats', $stats, 1 * HOUR_IN_SECONDS );
 }
-//smallest interval is hourly
+// The smallest interval possible for WordPress cron is hourly.
 if ( ! wp_next_scheduled( 'refresh_network_stats' ) ) {
-  wp_schedule_event( time(), 'hourly', 'refresh_network_stats' );
+	wp_schedule_event( time(), 'hourly', 'refresh_network_stats' );
 }
 
 add_action( 'refresh_network_stats', 'MULTISITE_STATS\get_network_stats' );
@@ -126,7 +126,7 @@ class MultiSiteStats extends \WP_Widget {
 	 * Sets up the widgets name etc
 	 */
 	public function __construct() {
-		$widget_ops = array( 
+		$widget_ops = array(
 			'classname' => 'my_widget',
 			'description' => 'My Widget is awesome',
 		);
@@ -135,11 +135,8 @@ class MultiSiteStats extends \WP_Widget {
 
 	/**
 	 * Outputs the content of the widget
-	 *
-	 * @param array $args
-	 * @param array $instance
 	 */
-	public function widget( $args, $instance ) {
+	public function widget() {
 		$endpointurl = get_site_url( ) . '/wp-json/multisitestats/v1/stats/';
 		$response = wp_remote_get( $endpointurl );
 		$body = wp_remote_retrieve_body( $response );
@@ -155,9 +152,9 @@ class MultiSiteStats extends \WP_Widget {
 			
 		<?php foreach ( $stats as $stat ) { ?>
 			<tr>
-				<td><?php echo $stat->domain; ?> </td>
-				<td> <?php echo $stat->site_users; ?></td>
-				<td> <?php echo $stat->site_posts; ?></td>
+				<td><?php echo esc_html( $stat->domain ); ?> </td>
+				<td> <?php echo esc_html( $stat->site_users ); ?></td>
+				<td> <?php echo esc_html( $stat->site_posts ); ?></td>
 			</tr>
 			
 		<?php } ?>
@@ -167,7 +164,7 @@ class MultiSiteStats extends \WP_Widget {
 
 }
 
-add_action( 'widgets_init', function(){
+add_action( 'widgets_init', function() {
 	register_widget( 'Multisite_Stats\MultiSiteStats' );
 });
 
