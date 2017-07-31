@@ -13,9 +13,9 @@
 
 namespace MULTISITE_STATS;
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
-	die;
-}
+// if ( ! defined( 'WPINC' ) ) {
+// 	die;
+// }
 // The class that contains the plugin info.
 // require_once plugin_dir_path( __FILE__ ) . 'includes/class-info.php';
 // /**
@@ -41,7 +41,7 @@ if ( ! defined( 'WPINC' ) ) {
 class UserFields {
 
 	function __construct() {
-		add_filter( 'rest_user_query',           [$this, 'show_all_users'] );
+		add_filter( 'rest_user_query',           [ $this, 'show_all_users' ] );
 	}
 
 	function show_all_users( $prepared_args ) {
@@ -49,6 +49,42 @@ class UserFields {
 		return $prepared_args;
 	}
 }
-
 new UserFields();
+/**
+ * Summary.
+ *
+ * Description.
+ *
+ * @since 1.0
+ */
+function get_network_user_count() {
+	$sites = get_sites();
+	$total_users = 0;
+	foreach ( $sites as $site ) {
+		$domain = $site->domain;
+		$site_users = get_site_user_count( $domain );
+		echo $site_users;
+		$total_users += $site_users;
+	}
+	echo $total_users;
 
+}
+/**
+ * Summary.
+ *
+ * Description.
+ *
+ * @since 1.0
+ *
+ * @param string $site_domain Description.
+ * @return int $user_count Users in site.
+ */
+function get_site_user_count( $site_domain ) {
+	$user_count = 0;
+	$endpointurl = 'http://' . $site_domain . '/wp-json/wp/v2/users';
+	// echo $endpointurl;
+	$response = wp_remote_get( $endpointurl );
+	$user_count = wp_remote_retrieve_header( $response, 'x-wp-total' );
+	// print_r( $response );
+	return $user_count;
+}
