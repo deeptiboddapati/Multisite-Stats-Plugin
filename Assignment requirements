@@ -19,3 +19,27 @@ Chron to update every minute
 Widget
 
 
+
+Counts the posts and users on each site of a multisite network
+get_current_blog_id();
+switch_to_blog
+get_sites();
+count_users()
+//cached
+get_user_count();
+
+
+ wp site create --slug=aa
+ wp user generate -count=33 --url=aa.restapi.dev
+
+$response = wp_remote_get('http://1.restapi.dev/wp-json/wp/v2/users')
+
+OR
+$response = wp_remote_get('http://1.restapi.dev/wp-json/wp/v2/posts')
+
+$total = wp_remote_retrieve_header( $response,'x-wp-total' );
+
+
+Debug
+wp_remote_retrieve_headers( $response );
+

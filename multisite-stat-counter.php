@@ -17,15 +17,15 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 // The class that contains the plugin info.
-require_once plugin_dir_path( __FILE__ ) . 'includes/class-info.php';
-/**
- * The code that runs during plugin activation.
- */
-function activation() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-activator.php';
-	Activator::activate();
-}
-register_activation_hook( __FILE__, __NAMESPACE__ . '\\activation' );
+// require_once plugin_dir_path( __FILE__ ) . 'includes/class-info.php';
+// /**
+//  * The code that runs during plugin activation.
+//  */
+// function activation() {
+// 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-activator.php';
+// 	Activator::activate();
+// }
+// register_activation_hook( __FILE__, __NAMESPACE__ . '\\activation' );
 
 /**
  * Run the plugin.
@@ -36,3 +36,19 @@ register_activation_hook( __FILE__, __NAMESPACE__ . '\\activation' );
 // 	$plugin->run();
 // }
 // run();
+
+
+class UserFields {
+
+	function __construct() {
+		add_filter( 'rest_user_query',           [$this, 'show_all_users'] );
+	}
+
+	function show_all_users( $prepared_args ) {
+		unset( $prepared_args[ 'has_published_posts' ] );
+		return $prepared_args;
+	}
+}
+
+new UserFields();
+
