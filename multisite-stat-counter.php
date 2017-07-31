@@ -16,34 +16,12 @@ namespace MULTISITE_STATS;
 // if ( ! defined( 'WPINC' ) ) {
 // 	die;
 // }
-// The class that contains the plugin info.
-// require_once plugin_dir_path( __FILE__ ) . 'includes/class-info.php';
-// /**
-//  * The code that runs during plugin activation.
-//  */
-// function activation() {
-// 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-activator.php';
-// 	Activator::activate();
-// }
-// register_activation_hook( __FILE__, __NAMESPACE__ . '\\activation' );
-
-/**
- * Run the plugin.
- */
-// function run() {
-// 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-plugin.php';
-// 	$plugin = new Plugin();
-// 	$plugin->run();
-// }
-// run();
-
 
 class UserFields {
 
 	function __construct() {
 		add_filter( 'rest_user_query',           [ $this, 'show_all_users' ] );
 	}
-
 	function show_all_users( $prepared_args ) {
 		unset( $prepared_args[ 'has_published_posts' ] );
 		return $prepared_args;
@@ -70,7 +48,7 @@ function get_network_stats() {
 		$site_stats[ 'site_posts' ] = $site_posts;
 		array_push( $stats, $site_stats );
 	}
-	update_option( 'network_stats', $stats);
+	set_site_transient( 'network_stats', $stats, 1 * HOUR_IN_SECONDS);
 }
 //smallest interval is hourly
 if ( ! wp_next_scheduled( 'refresh_network_stats' ) ) {
@@ -117,7 +95,11 @@ function get_site_post_count( $site_domain ) {
 }
 
 function network_stats_endpoint(){
-	$stats = get_option( 'network_stats' );
+	$stats = get_site_transient( 'network_stats' );
+	if ( ! $stats ){
+		get_network_stats();
+		$stats = get_site_transient( 'network_stats' );
+	}
 	return $stats;
 }
 /**
@@ -171,17 +153,14 @@ class MultiSiteStats extends \WP_Widget {
 					<th>Posts</th>
 				</tr>
 			
-		<?php
-		foreach ( $stats as $stat ) {
-			?>
+		<?php foreach ( $stats as $stat ) { ?>
 			<tr>
 				<td><?php echo $stat->domain; ?> </td>
 				<td> <?php echo $stat->site_users; ?></td>
 				<td> <?php echo $stat->site_posts; ?></td>
 			</tr>
-			<?php
-		}
-		?>
+			
+		<?php } ?>
 			</table>
 		<?php
 	}
