@@ -1,0 +1,21 @@
+ Here is the assignment we'd suggest: a widget (in the form of a plugin) which shows stats about the site it is installed on (e.g. number of posts, users, etc.) as well as stats for all the other sites on a multisite network, pulled using the REST API. Ideally, the stats should update once a minute.
+
+ For the widget we had in mind a frontend widget that you could place into a sidebar, similar in concept to the Archives widget. As for what the widget contains, it would be at least stats on the number of generic posts published and the number of users, but it could also include pages and other post types. That's up to you. Adding support for non-posts would be just expanding whatever solution is developed for gathering stats for all generic posts across a network. And yes, a custom REST API endpoint for stats would be the right approach!
+
+ A front end widget
+
+ Similar to Archives widget
+
+
+
+Counts the posts and users on a multisite network
+Stats:
+	# of generic posts published 
+	# of users 
+	# of pages 
+	# of other post types
+Output via a custom endpoint
+Chron to update every minute
+Widget
+
+
