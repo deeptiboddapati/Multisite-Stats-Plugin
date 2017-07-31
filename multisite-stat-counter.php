@@ -70,9 +70,16 @@ function get_network_stats() {
 		$site_stats[ 'site_posts' ] = $site_posts;
 		array_push( $stats, $site_stats );
 	}
-
-	return $stats;
+	update_option( 'network_stats', $stats);
 }
+//smallest interval is hourly
+if ( ! wp_next_scheduled( 'refresh_network_stats' ) ) {
+  wp_schedule_event( time(), 'hourly', 'refresh_network_stats' );
+}
+
+add_action( 'refresh_network_stats', 'MULTISITE_STATS\get_network_stats' );
+
+
 /**
  * Summary.
  *
@@ -109,6 +116,10 @@ function get_site_post_count( $site_domain ) {
 	return $post_count;
 }
 
+function network_stats_endpoint(){
+	$stats = get_option( 'network_stats' );
+	return $stats;
+}
 /**
  * Summary.
  *
@@ -122,6 +133,6 @@ function get_site_post_count( $site_domain ) {
 add_action( 'rest_api_init', function () {
 	register_rest_route( 'multisitestats/v1', '/stats/', array(
 		'methods' => 'GET',
-		'callback' => 'MULTISITE_STATS\get_network_stats',
+		'callback' => 'MULTISITE_STATS\network_stats_endpoint',
 	) );
 } );
