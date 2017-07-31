@@ -95,9 +95,9 @@ class Multisite_Stats {
 			$site_users = $this->get_blog_user_count( $domain );
 			$site_posts = $this->get_blog_post_count( $domain );
 			$site_stats = array();
-			$site_stats['domain'] = $domain;
-			$site_stats['site_users'] = $site_users;
-			$site_stats['site_posts'] = $site_posts;
+			$site_stats['domain'] = esc_url( $domain );
+			$site_stats['site_users'] = intval( $site_users );
+			$site_stats['site_posts'] = intval( $site_posts );
 			array_push( $stats, $site_stats );
 		}
 		set_site_transient( 'network_stats', $stats, 1 * HOUR_IN_SECONDS );
