@@ -67,6 +67,13 @@ new UserFields();
  * @see \WP_Widget
  */
 class Multisite_Stats {
+	/**
+	 * Constructs the Multisite_Stats Class
+	 *
+	 * Registers the Cron and the rest route for Multisite stats.
+	 *
+	 * @since 1.0
+	 */
 	public function __construct() {
 		// The smallest interval possible for WordPress cron is hourly.
 		if ( ! wp_next_scheduled( 'refresh_network_stats' ) ) {
@@ -206,9 +213,9 @@ class MultiSiteStats extends \WP_Widget {
 			
 		<?php foreach ( $stats as $stat ) { ?>
 			<tr>
-				<td><?php echo esc_html( $stat->domain ); ?> </td>
-				<td> <?php echo esc_html( $stat->site_users ); ?></td>
-				<td> <?php echo esc_html( $stat->site_posts ); ?></td>
+				<td><?php echo esc_url( $stat->domain ); ?> </td>
+				<td> <?php echo intval( $stat->site_users ); ?></td>
+				<td> <?php echo intval( $stat->site_posts ); ?></td>
 			</tr>
 			
 		<?php } ?>
