@@ -81,13 +81,14 @@ class Multisite_Stats {
 				wp_schedule_event( time(), 'hourly', 'refresh_network_stats' );
 			}
 			add_action( 'refresh_network_stats', array( $this, 'network_stats_endpoint' ) );
+			}
 			add_action( 'rest_api_init', function () {
 				register_rest_route( 'multisitestats/v1', '/stats/', array(
 					'methods' => 'GET',
 					'callback' => array( $this, 'network_stats_endpoint' ),
 				) );
 			} );
-		}
+		
 	}
 	/**
 	 * Refreshes network wide statistics.
