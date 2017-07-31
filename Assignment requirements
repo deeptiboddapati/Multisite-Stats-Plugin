@@ -15,7 +15,8 @@ Stats:
 	# of pages 
 	# of other post types
 Output via a custom endpoint
-Chron to update every minute
+Chron to update every hour (can't be every minute with WP cron. We would need to add a true cron which is dependent on the host)
+
 Widget
 
 
