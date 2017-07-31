@@ -47,6 +47,6 @@ wp_remote_retrieve_headers( $response );
 
 WP CLI shell testing
 ensure that the direct path check is disabled.
-MULTISITE_STATS\get_network_user_count();
+MULTISITE_STATS\get_network_stats();
 
 

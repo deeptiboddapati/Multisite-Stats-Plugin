@@ -57,16 +57,18 @@ new UserFields();
  *
  * @since 1.0
  */
-function get_network_user_count() {
+function get_network_stats() {
 	$sites = get_sites();
 	$total_users = 0;
+	$total_posts = 0;
 	foreach ( $sites as $site ) {
 		$domain = $site->domain;
 		$site_users = get_site_user_count( $domain );
-		echo $site_users;
 		$total_users += $site_users;
+		$site_posts = get_site_post_count( $domain );
+		$total_posts += $site_posts;
 	}
-	echo $total_users;
+
 
 }
 /**
@@ -82,9 +84,26 @@ function get_network_user_count() {
 function get_site_user_count( $site_domain ) {
 	$user_count = 0;
 	$endpointurl = 'http://' . $site_domain . '/wp-json/wp/v2/users';
-	// echo $endpointurl;
 	$response = wp_remote_get( $endpointurl );
 	$user_count = wp_remote_retrieve_header( $response, 'x-wp-total' );
-	// print_r( $response );
 	return $user_count;
 }
+
+/**
+ * Summary.
+ *
+ * Description.
+ *
+ * @since 1.0
+ *
+ * @param string $site_domain Description.
+ * @return int $post_count Posts in site.
+ */
+function get_site_post_count( $site_domain ) {
+	$post_count = 0;
+	$endpointurl = 'http://' . $site_domain . '/wp-json/wp/v2/posts';
+	$response = wp_remote_get( $endpointurl );
+	$post_count = wp_remote_retrieve_header( $response, 'x-wp-total' );
+	return $post_count;
+}
+
